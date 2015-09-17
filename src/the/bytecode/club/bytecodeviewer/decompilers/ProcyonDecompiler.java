@@ -19,9 +19,6 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
-import me.konloch.kontainer.io.DiskWriter;
-
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
 import com.strobel.core.StringUtilities;
@@ -41,20 +38,33 @@ import the.bytecode.club.bytecodeviewer.BytecodeViewer;
 import the.bytecode.club.bytecodeviewer.JarUtils;
 import the.bytecode.club.bytecodeviewer.MiscUtils;
 
+/***************************************************************************
+ * Bytecode Viewer (BCV) - Java & Android Reverse Engineering Suite        *
+ * Copyright (C) 2014 Kalen 'Konloch' Kinloch - http://bytecodeviewer.com  *
+ *                                                                         *
+ * This program is free software: you can redistribute it and/or modify    *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation, either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
 /**
+ * Procyon Java Decompiler Wrapper
  * 
  * @author Konloch
  * @author DeathMarine
  * 
  */
 
-public class ProcyonDecompiler extends JavaDecompiler {
-
-	@Override
-	public void decompileToClass(String className, String classNameSaved) {
-		String contents = decompileClassNode(BytecodeViewer.getClassNode(className));
-		DiskWriter.replaceFile(classNameSaved, contents, false);
-	}
+public class ProcyonDecompiler extends Decompiler {
 
 	public DecompilerSettings getDecompilerSettings() {
 		DecompilerSettings settings = new DecompilerSettings();
@@ -91,12 +101,9 @@ public class ProcyonDecompiler extends JavaDecompiler {
 	}
 
 	@Override
-	public String decompileClassNode(ClassNode cn) {
+	public String decompileClassNode(ClassNode cn, byte[] b) {
 		String exception = "";
 		try {
-			final ClassWriter cw = new ClassWriter(0);
-			cn.accept(cw);
-
 			String fileStart = BytecodeViewer.tempDirectory + BytecodeViewer.fs
 					+ "temp";
 
@@ -105,7 +112,7 @@ public class ProcyonDecompiler extends JavaDecompiler {
 			try {
 				final FileOutputStream fos = new FileOutputStream(tempClass);
 
-				fos.write(cw.toByteArray());
+				fos.write(b);
 
 				fos.close();
 			} catch (final IOException e) {

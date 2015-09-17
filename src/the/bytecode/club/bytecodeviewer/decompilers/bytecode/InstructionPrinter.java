@@ -19,6 +19,7 @@ import org.objectweb.asm.tree.FrameNode;
 import org.objectweb.asm.tree.IincInsnNode;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.IntInsnNode;
+import org.objectweb.asm.tree.InvokeDynamicInsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LdcInsnNode;
@@ -31,8 +32,25 @@ import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
 import the.bytecode.club.bytecodeviewer.BytecodeViewer;
-import the.bytecode.club.bytecodeviewer.decompilers.bytecode.TypeAndName;
 import eu.bibl.banalysis.asm.desc.OpcodeInfo;
+
+/***************************************************************************
+ * Bytecode Viewer (BCV) - Java & Android Reverse Engineering Suite        *
+ * Copyright (C) 2014 Kalen 'Konloch' Kinloch - http://bytecodeviewer.com  *
+ *                                                                         *
+ * This program is free software: you can redistribute it and/or modify    *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation, either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+ ***************************************************************************/
 
 /**
  * 
@@ -129,8 +147,10 @@ public class InstructionPrinter {
 				line = printTableSwitchInsnNode((TableSwitchInsnNode) ain);
 			} else if (ain instanceof LookupSwitchInsnNode) {
 				line = printLookupSwitchInsnNode((LookupSwitchInsnNode) ain);
+			} else if (ain instanceof InvokeDynamicInsnNode) {
+				line = printInvokeDynamicInsNode((InvokeDynamicInsnNode) ain);
 			} else {
-				line += "UNADDED OPCODE: " + nameOpcode(ain.getOpcode()) + " "
+				line += "UNADDED OPCODE: " + nameOpcode(ain.opcode()) + " "
 						+ ain.toString();
 			}
 			if (!line.equals("")) {
@@ -149,7 +169,7 @@ public class InstructionPrinter {
 
 	protected String printVarInsnNode(VarInsnNode vin, ListIterator<?> it) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(nameOpcode(vin.getOpcode()));
+		sb.append(nameOpcode(vin.opcode()));
 		sb.append(vin.var);
 		if (BytecodeViewer.viewer.debugHelpers.isSelected()) {
 			if (vin.var == 0 && !Modifier.isStatic(mNode.access)) {
@@ -167,20 +187,20 @@ public class InstructionPrinter {
 	}
 
 	protected String printIntInsnNode(IntInsnNode iin, ListIterator<?> it) {
-		return nameOpcode(iin.getOpcode()) + " " + iin.operand;
+		return nameOpcode(iin.opcode()) + " " + iin.operand;
 	}
 
 	protected String printFieldInsnNode(FieldInsnNode fin, ListIterator<?> it) {
 		String desc = Type.getType(fin.desc).getClassName();
 		if (desc == null || desc.equals("null"))
 			desc = fin.desc;
-		return nameOpcode(fin.getOpcode()) + " " + fin.owner + "." + fin.name
+		return nameOpcode(fin.opcode()) + " " + fin.owner + "." + fin.name
 				+ ":" + desc;
 	}
 
 	protected String printMethodInsnNode(MethodInsnNode min, ListIterator<?> it) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(nameOpcode(min.getOpcode()) + " " + min.owner + " "
+		sb.append(nameOpcode(min.opcode()) + " " + min.owner + " "
 				+ min.name + "(");
 
 		String desc = min.desc;
@@ -203,21 +223,21 @@ public class InstructionPrinter {
 
 	protected String printLdcInsnNode(LdcInsnNode ldc, ListIterator<?> it) {
 		if (ldc.cst instanceof String)
-			return nameOpcode(ldc.getOpcode()) + " \""
+			return nameOpcode(ldc.opcode()) + " \""
 					+ StringEscapeUtils.escapeJava(ldc.cst.toString()) + "\" ("
 					+ ldc.cst.getClass().getCanonicalName() + ")";
 
-		return nameOpcode(ldc.getOpcode()) + " "
+		return nameOpcode(ldc.opcode()) + " "
 				+ StringEscapeUtils.escapeJava(ldc.cst.toString()) + " ("
 				+ ldc.cst.getClass().getCanonicalName() + ")";
 	}
 
 	protected String printInsnNode(InsnNode in, ListIterator<?> it) {
-		return nameOpcode(in.getOpcode());
+		return nameOpcode(in.opcode());
 	}
 
 	protected String printJumpInsnNode(JumpInsnNode jin, ListIterator<?> it) {
-		String line = nameOpcode(jin.getOpcode()) + " L"
+		String line = nameOpcode(jin.opcode()) + " L"
 				+ resolveLabel(jin.label);
 		return line;
 	}
@@ -242,7 +262,7 @@ public class InstructionPrinter {
 			} catch(java.lang.ArrayIndexOutOfBoundsException e) {
 				
 			}
-			return nameOpcode(tin.getOpcode()) + " " + desc;
+			return nameOpcode(tin.opcode()) + " " + desc;
 		} catch (Exception e) {
 			new the.bytecode.club.bytecodeviewer.api.ExceptionUI(e);
 		}
@@ -250,14 +270,14 @@ public class InstructionPrinter {
 	}
 
 	protected String printIincInsnNode(IincInsnNode iin) {
-		return nameOpcode(iin.getOpcode()) + " " + iin.var + " " + iin.incr;
+		return nameOpcode(iin.opcode()) + " " + iin.var + " " + iin.incr;
 	}
 
 	protected String printTableSwitchInsnNode(TableSwitchInsnNode tin) {
-		String line = nameOpcode(tin.getOpcode()) + " \n";
+		String line = nameOpcode(tin.opcode()) + " \n";
 		List<?> labels = tin.labels;
 		int count = 0;
-		for (int i = tin.min; i < tin.max; i++) {
+		for (int i = tin.min; i < tin.max+1; i++) {
 			line += "                val: " + i + " -> " + "L"
 					+ resolveLabel((LabelNode) labels.get(count++)) + "\n";
 		}
@@ -267,7 +287,7 @@ public class InstructionPrinter {
 	}
 
 	protected String printLookupSwitchInsnNode(LookupSwitchInsnNode lin) {
-		String line = nameOpcode(lin.getOpcode()) + ": \n";
+		String line = nameOpcode(lin.opcode()) + ": \n";
 		List<?> keys = lin.keys;
 		List<?> labels = lin.labels;
 
@@ -280,6 +300,29 @@ public class InstructionPrinter {
 		line += "                default" + " -> L" + resolveLabel(lin.dflt)
 				+ "";
 		return line;
+	}
+
+	protected String printInvokeDynamicInsNode(InvokeDynamicInsnNode idin) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(nameOpcode(idin.opcode()) + " " + idin.bsm.getName() + "(");
+
+		String desc = idin.desc;
+		String partedDesc = idin.desc.substring(2);
+		try {
+			if(Type.getType(partedDesc) != null)
+				desc = Type.getType(partedDesc).getClassName();
+
+			if (desc == null || desc.equals("null"))
+				desc = idin.desc;
+		} catch(java.lang.ArrayIndexOutOfBoundsException e) {
+
+		}
+
+		sb.append(desc);
+
+		sb.append(");");
+
+		return sb.toString();
 	}
 
 	protected String nameOpcode(int opcode) {

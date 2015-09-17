@@ -1,14 +1,41 @@
 package the.bytecode.club.bytecodeviewer.api;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import org.objectweb.asm.tree.ClassNode;
 
-import the.bytecode.club.bytecodeviewer.plugins.EZInjection;
+import the.bytecode.club.bytecodeviewer.JarUtils;
+import the.bytecode.club.bytecodeviewer.decompilers.Decompiler;
+import the.bytecode.club.bytecodeviewer.plugin.preinstalled.EZInjection;
+
+/***************************************************************************
+ * Bytecode Viewer (BCV) - Java & Android Reverse Engineering Suite        *
+ * Copyright (C) 2014 Kalen 'Konloch' Kinloch - http://bytecodeviewer.com  *
+ *                                                                         *
+ * This program is free software: you can redistribute it and/or modify    *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation, either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+ ***************************************************************************/
 
 /**
- * The official API for BCV, this was mainly designed for plugin authors and
+ * The official API for BCV, this was designed for plugin authors and
  * people utilizing EZ-Injection.
  * 
  * @author Konloch
@@ -17,6 +44,8 @@ import the.bytecode.club.bytecodeviewer.plugins.EZInjection;
 
 public class BytecodeViewer {
 
+	private static URLClassLoader cl;
+	
 	/**
 	 * Grab the loader instance
 	 * 
@@ -24,6 +53,69 @@ public class BytecodeViewer {
 	 */
 	public static ClassNodeLoader getClassNodeLoader() {
 		return the.bytecode.club.bytecodeviewer.BytecodeViewer.loader;
+	}
+	
+	/**
+	 * Returns the URLClassLoader instance
+	 * @return the URLClassLoader instance
+	 */
+	public static URLClassLoader getClassLoaderInstance() {
+		return cl;
+	}
+
+	
+	
+	/**
+	 * Re-instances the URLClassLoader and loads a jar to it.
+	 * 
+	 * @param nodeList
+	 *            The list of ClassNodes to be loaded
+	 * @return The loaded classes into the new URLClassLoader instance
+	 * @author Cafebabe
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	@SuppressWarnings("deprecation")
+	public static List<Class<?>> loadClassesIntoClassLoader(
+			ArrayList<ClassNode> nodeList) throws IOException,
+			ClassNotFoundException {
+
+		File f = new File(
+				the.bytecode.club.bytecodeviewer.BytecodeViewer.tempDirectory
+						+ the.bytecode.club.bytecodeviewer.BytecodeViewer.fs
+						+ "loaded_temp.jar");
+		JarUtils.saveAsJarClassesOnly(nodeList, f.getAbsolutePath());
+		
+		JarFile jarFile = new JarFile("" + f.getAbsolutePath());
+		Enumeration<JarEntry> e = jarFile.entries();
+		cl = URLClassLoader.newInstance(new URL[]{ f.toURL() });
+		List<Class<?>> ret = new ArrayList<Class<?>>();
+
+		while (e.hasMoreElements()) {
+			JarEntry je = (JarEntry) e.nextElement();
+			if (je.isDirectory() || !je.getName().endsWith(".class"))
+				continue;
+			String className = je.getName().replace("/", ".").replace(".class", "");
+			className = className.replace('/', '.');
+			ret.add(cl.loadClass(className));
+
+		}
+		jarFile.close();
+
+		return ret;
+
+	}
+	
+	
+	/**
+	 * Re-instances the URLClassLoader and loads a jar to it.
+	 * @return The loaded classes into the new URLClassLoader instance
+	 * @author Cafebabe
+	 * @throws IOException 
+	 * @throws ClassNotFoundException 
+	 */
+	public static List<Class<?>> loadAllClassesIntoClassLoader() throws ClassNotFoundException, IOException {
+		return loadClassesIntoClassLoader(getLoadedClasses());
 	}
 
 	/**
@@ -125,5 +217,69 @@ public class BytecodeViewer {
 	 */
 	public static void showMessage(String message) {
 		the.bytecode.club.bytecodeviewer.BytecodeViewer.showMessage(message);
+	}
+	
+	/**
+	 * Returns the wrapped Krakatau Decompiler instance.
+	 * @return The wrapped Krakatau Decompiler instance
+	 */
+	public static Decompiler getKrakatauDecompiler() {
+		return Decompiler.krakatau;
+	}
+	
+	/**
+	 * Returns the wrapped Procyon Decompiler instance.
+	 * @return The wrapped Procyon Decompiler instance
+	 */
+	public static Decompiler getProcyonDecompiler() {
+		return Decompiler.procyon;
+	}
+	
+	/**
+	 * Returns the wrapped CFR Decompiler instance.
+	 * @return The wrapped CFR Decompiler instance
+	 */
+	public static Decompiler getCFRDecompiler() {
+		return Decompiler.cfr;
+	}
+	
+	/**
+	 * Returns the wrapped FernFlower Decompiler instance.
+	 * @return The wrapped FernFlower Decompiler instance
+	 */
+	public static Decompiler getFernFlowerDecompiler() {
+		return Decompiler.fernflower;
+	}
+	
+	/**
+	 * Returns the wrapped Krakatau Disassembler instance.
+	 * @return The wrapped Krakatau Disassembler instance
+	 */
+	public static Decompiler getKrakatauDisassembler() {
+		return Decompiler.krakatauDA;
+	}
+	
+	/**
+	 * Returns the wrapped Krakatau Assembler instance.
+	 * @return The wrapped Krakatau Assembler instance
+	 */
+	public static the.bytecode.club.bytecodeviewer.compilers.Compiler getKrakatauCompiler() {
+		return the.bytecode.club.bytecodeviewer.compilers.Compiler.krakatau;
+	}
+	
+	/**
+	 * Returns the wrapped Smali Assembler instance.
+	 * @return The wrapped Smali Assembler instance
+	 */
+	public static the.bytecode.club.bytecodeviewer.compilers.Compiler getSmaliCompiler() {
+		return the.bytecode.club.bytecodeviewer.compilers.Compiler.smali;
+	}
+	
+	/**
+	 * Returns the wrapped JD-GUI Decompiler instance.
+	 * @return The wrapped JD-GUI Decompiler instance
+	 */
+	public static the.bytecode.club.bytecodeviewer.decompilers.Decompiler getDJGUIDecompiler() {
+		return the.bytecode.club.bytecodeviewer.decompilers.Decompiler.jdgui;
 	}
 }

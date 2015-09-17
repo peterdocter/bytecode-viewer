@@ -10,6 +10,25 @@ import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import the.bytecode.club.bytecodeviewer.BytecodeViewer;
+import the.bytecode.club.bytecodeviewer.decompilers.Decompiler;
+
+/***************************************************************************
+ * Bytecode Viewer (BCV) - Java & Android Reverse Engineering Suite        *
+ * Copyright (C) 2014 Kalen 'Konloch' Kinloch - http://bytecodeviewer.com  *
+ *                                                                         *
+ * This program is free software: you can redistribute it and/or modify    *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation, either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+ ***************************************************************************/
 
 /**
  * 
@@ -18,15 +37,14 @@ import the.bytecode.club.bytecodeviewer.BytecodeViewer;
  * 
  */
 
-public class ClassNodeDecompiler {
+public class ClassNodeDecompiler extends Decompiler {
 
-	public static String decompile(ClassNode cn) {
-		return decompileClassNode(new PrefixedStringBuilder(),
+	public String decompileClassNode(ClassNode cn, byte[] b) {
+		return decompile(new PrefixedStringBuilder(),
 				new ArrayList<String>(), cn).toString();
 	}
 
-	@SuppressWarnings("unchecked")
-	protected static PrefixedStringBuilder decompileClassNode(
+	protected static PrefixedStringBuilder decompile(
 			PrefixedStringBuilder sb, ArrayList<String> decompiledClasses,
 			ClassNode cn) {
 		ArrayList<String> unableToDecompile = new ArrayList<String>();
@@ -76,7 +94,7 @@ public class ClassNodeDecompiler {
 				if (cn1 != null) {
 					sb.appendPrefix("     ");
 					sb.append(BytecodeViewer.nl + BytecodeViewer.nl);
-					sb = decompileClassNode(sb, decompiledClasses, cn1);
+					sb = decompile(sb, decompiledClasses, cn1);
 					sb.trimPrefix(5);
 					sb.append(BytecodeViewer.nl);
 				} else {
@@ -136,4 +154,6 @@ public class ClassNodeDecompiler {
 		}
 		return sb.toString();
 	}
+
+	@Override public void decompileToZip(String zipName) { }
 }

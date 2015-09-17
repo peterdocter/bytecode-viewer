@@ -2,9 +2,6 @@ package the.bytecode.club.bytecodeviewer.api;
 
 import java.util.List;
 
-import org.objectweb.asm.ClassAdapter;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -16,8 +13,24 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TypeInsnNode;
 
 import the.bytecode.club.bytecodeviewer.BytecodeViewer;
-import the.bytecode.club.bytecodeviewer.CoolClassAdapter;
-import the.bytecode.club.bytecodeviewer.JarUtils;
+
+/***************************************************************************
+ * Bytecode Viewer (BCV) - Java & Android Reverse Engineering Suite        *
+ * Copyright (C) 2014 Kalen 'Konloch' Kinloch - http://bytecodeviewer.com  *
+ *                                                                         *
+ * This program is free software: you can redistribute it and/or modify    *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation, either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+ ***************************************************************************/
 
 /**
  * Used to rename/replace methods/classes/fields
@@ -98,7 +111,6 @@ public final class ASMUtil_OLD {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static void renameClassNode(final String oldName,
 			final String newName) {
 		for (ClassNode c : BytecodeViewer.getLoadedClasses()) {
@@ -169,15 +181,6 @@ public final class ASMUtil_OLD {
 					}
 				}
 			}
-
-			ClassWriter cw2 = new ClassWriter(0);
-			c.accept(cw2);
-			ClassReader cr=new ClassReader(cw2.toByteArray());
-			ClassWriter cw=new ClassWriter(ClassWriter.COMPUTE_MAXS);
-			ClassAdapter ca=new CoolClassAdapter(cw, oldName, newName);
-			cr.accept(ca, 0);
-			byte[] newClass = cw.toByteArray();
-			BytecodeViewer.updateNode(c, JarUtils.getNode(newClass));
 		}
 	}
 }

@@ -7,12 +7,30 @@ import java.awt.Dimension;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
 
-import the.bytecode.club.bytecodeviewer.BytecodeViewer;
-import the.bytecode.club.bytecodeviewer.plugins.MaliciousCodeScanner;
-import the.bytecode.club.bytecodeviewer.plugins.PluginManager;
+import the.bytecode.club.bytecodeviewer.Resources;
+import the.bytecode.club.bytecodeviewer.plugin.PluginManager;
+import the.bytecode.club.bytecodeviewer.plugin.preinstalled.MaliciousCodeScanner;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+
+/***************************************************************************
+ * Bytecode Viewer (BCV) - Java & Android Reverse Engineering Suite        *
+ * Copyright (C) 2014 Kalen 'Konloch' Kinloch - http://bytecodeviewer.com  *
+ *                                                                         *
+ * This program is free software: you can redistribute it and/or modify    *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation, either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+ ***************************************************************************/
 
 /**
  * A simple GUI to select the Malicious Code Scanner options.
@@ -24,7 +42,7 @@ import java.awt.event.ActionEvent;
 
 public class MaliciousCodeScannerOptions extends JFrame {
 	public MaliciousCodeScannerOptions() {
-		this.setIconImages(BytecodeViewer.iconList);
+		this.setIconImages(Resources.iconList);
 		setSize(new Dimension(250, 323));
 		setResizable(false);
 		setTitle("Malicious Code Scanner Options");

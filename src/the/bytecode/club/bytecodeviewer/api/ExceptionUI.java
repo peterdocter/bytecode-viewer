@@ -1,18 +1,35 @@
 package the.bytecode.club.bytecodeviewer.api;
 
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
-
-import java.awt.Dimension;
-import java.awt.CardLayout;
-
 import javax.swing.JTextArea;
 
 import the.bytecode.club.bytecodeviewer.BytecodeViewer;
+import the.bytecode.club.bytecodeviewer.Resources;
 
-import java.awt.Color;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+/***************************************************************************
+ * Bytecode Viewer (BCV) - Java & Android Reverse Engineering Suite        *
+ * Copyright (C) 2014 Kalen 'Konloch' Kinloch - http://bytecodeviewer.com  *
+ *                                                                         *
+ * This program is free software: you can redistribute it and/or modify    *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation, either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+ ***************************************************************************/
 
 /**
  * A simple class designed to show exceptions in the UI.
@@ -23,11 +40,13 @@ import java.io.StringWriter;
 
 public class ExceptionUI extends JFrame {
 
+	private static final long serialVersionUID = -5230501978224926296L;
+
 	/**
 	 * @param e
 	 *            The exception to be shown
 	 */
-	public ExceptionUI(Exception e) {
+	public ExceptionUI(Throwable e) {
 		setup(e, "@Konloch - konloch@gmail.com");
 	}
 	
@@ -45,7 +64,7 @@ public class ExceptionUI extends JFrame {
 	 * @param author
 	 *            the author of the plugin throwing this exception.
 	 */
-	public ExceptionUI(Exception e, String author) {
+	public ExceptionUI(Throwable e, String author) {
 		setup(e, author);
 	}
 
@@ -59,9 +78,9 @@ public class ExceptionUI extends JFrame {
 		setup(e, author);
 	}
 
-	private void setup(Exception e, String author) {
+	private void setup(Throwable e, String author) {
 
-		this.setIconImages(BytecodeViewer.iconList);
+		this.setIconImages(Resources.iconList);
 		setSize(new Dimension(600, 400));
 		setTitle("Bytecode Viewer " + BytecodeViewer.version
 				+ " - Stack Trace - Send this to " + author);
@@ -76,13 +95,16 @@ public class ExceptionUI extends JFrame {
 		e.printStackTrace(new PrintWriter(sw));
 		e.printStackTrace();
 
-		txtrBytecodeViewerIs.setText("Bytecode Viewer Version: " + BytecodeViewer.version + BytecodeViewer.nl + BytecodeViewer.nl + sw.toString());
+		txtrBytecodeViewerIs.setText("Bytecode Viewer Version: " + BytecodeViewer.version+
+				", Preview Copy: " + BytecodeViewer.previewCopy +
+				", Fat Jar: " + BytecodeViewer.fatJar +
+				BytecodeViewer.nl + BytecodeViewer.nl + sw.toString());
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 	}
 	
 	private void setup(String e, String author) {
-		this.setIconImages(BytecodeViewer.iconList);
+		this.setIconImages(Resources.iconList);
 		setSize(new Dimension(600, 400));
 		setTitle("Bytecode Viewer " + BytecodeViewer.version
 				+ " - Stack Trace - Send this to " + author);
@@ -94,10 +116,9 @@ public class ExceptionUI extends JFrame {
 		getContentPane().add(new JScrollPane(txtrBytecodeViewerIs),
 				"name_140466576080695");
 		txtrBytecodeViewerIs.setText(e);
+		System.err.println(e);
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 	}
-
-	private static final long serialVersionUID = -5230501978224926296L;
 
 }

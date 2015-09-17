@@ -5,6 +5,24 @@ import javax.swing.JFrame;
 import me.konloch.kontainer.io.DiskReader;
 import me.konloch.kontainer.io.DiskWriter;
 
+/***************************************************************************
+ * Bytecode Viewer (BCV) - Java & Android Reverse Engineering Suite        *
+ * Copyright (C) 2014 Kalen 'Konloch' Kinloch - http://bytecodeviewer.com  *
+ *                                                                         *
+ * This program is free software: you can redistribute it and/or modify    *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation, either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
 /**
  * Used to handle loading/saving the GUI (options).
  * 
@@ -113,8 +131,10 @@ public class Settings {
 				 DiskWriter.writeNewLine(BytecodeViewer.settingsName, "6", false);
 			 else if(BytecodeViewer.viewer.panelGroup1.isSelected(BytecodeViewer.viewer.panel1Krakatau.getModel()))
 				 DiskWriter.writeNewLine(BytecodeViewer.settingsName, "7", false);
-			 else if(BytecodeViewer.viewer.panelGroup1.isSelected(BytecodeViewer.viewer.panel1KrakatauEditable.getModel()))
+			 else if(BytecodeViewer.viewer.panelGroup1.isSelected(BytecodeViewer.viewer.panel1KrakatauBytecode.getModel()))
 				 DiskWriter.writeNewLine(BytecodeViewer.settingsName, "8", false);
+			 else if(BytecodeViewer.viewer.panelGroup1.isSelected(BytecodeViewer.viewer.panel1JDGUI.getModel()))
+				 DiskWriter.writeNewLine(BytecodeViewer.settingsName, "9", false);
 			   
 			 if(BytecodeViewer.viewer.panelGroup2.isSelected(BytecodeViewer.viewer.panel2None.getModel()))
 				 DiskWriter.writeNewLine(BytecodeViewer.settingsName, "0", false);
@@ -132,8 +152,10 @@ public class Settings {
 				 DiskWriter.writeNewLine(BytecodeViewer.settingsName, "6", false);
 			 else if(BytecodeViewer.viewer.panelGroup2.isSelected(BytecodeViewer.viewer.panel2Krakatau.getModel()))
 				 DiskWriter.writeNewLine(BytecodeViewer.settingsName, "7", false);
-			 else if(BytecodeViewer.viewer.panelGroup2.isSelected(BytecodeViewer.viewer.panel2KrakatauEditable.getModel()))
+			 else if(BytecodeViewer.viewer.panelGroup2.isSelected(BytecodeViewer.viewer.panel2KrakatauBytecode.getModel()))
 				 DiskWriter.writeNewLine(BytecodeViewer.settingsName, "8", false);
+			 else if(BytecodeViewer.viewer.panelGroup2.isSelected(BytecodeViewer.viewer.panel2JDGUI.getModel()))
+				 DiskWriter.writeNewLine(BytecodeViewer.settingsName, "9", false);
 			 
 			 if(BytecodeViewer.viewer.panelGroup3.isSelected(BytecodeViewer.viewer.panel3None.getModel()))
 				 DiskWriter.writeNewLine(BytecodeViewer.settingsName, "0", false);
@@ -151,8 +173,10 @@ public class Settings {
 				 DiskWriter.writeNewLine(BytecodeViewer.settingsName, "6", false);
 			 else if(BytecodeViewer.viewer.panelGroup3.isSelected(BytecodeViewer.viewer.panel3Krakatau.getModel()))
 				 DiskWriter.writeNewLine(BytecodeViewer.settingsName, "7", false);
-			 else if(BytecodeViewer.viewer.panelGroup3.isSelected(BytecodeViewer.viewer.panel3KrakatauEditable.getModel()))
+			 else if(BytecodeViewer.viewer.panelGroup3.isSelected(BytecodeViewer.viewer.panel3KrakatauBytecode.getModel()))
 				 DiskWriter.writeNewLine(BytecodeViewer.settingsName, "8", false);
+			 else if(BytecodeViewer.viewer.panelGroup3.isSelected(BytecodeViewer.viewer.panel3JDGUI.getModel()))
+				 DiskWriter.writeNewLine(BytecodeViewer.settingsName, "9", false);
 			 
 			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.refreshOnChange.isSelected()), false);
 			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.isMaximized), false);
@@ -161,6 +185,36 @@ public class Settings {
 			DiskWriter.writeNewLine(BytecodeViewer.settingsName, BytecodeViewer.lastDirectory, false);
 			DiskWriter.writeNewLine(BytecodeViewer.settingsName, BytecodeViewer.python, false);
 			DiskWriter.writeNewLine(BytecodeViewer.settingsName, BytecodeViewer.rt, false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel1Proc_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel1CFR_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel1Fern_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel1Krakatau_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel1Smali_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel2Proc_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel2CFR_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel2Fern_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel2Krakatau_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel2Smali_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel3Proc_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel3CFR_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel3Fern_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel3Krakatau_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel3Smali_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.decodeAPKResources.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, BytecodeViewer.library, false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.pingback), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel1JDGUI_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel2JDGUI_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.panel3JDGUI_E.isSelected()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.viewer.fontSpinner.getValue()), false);
+			DiskWriter.writeNewLine(BytecodeViewer.settingsName, String.valueOf(BytecodeViewer.deleteForiegnLibraries), false);
+			 if(BytecodeViewer.viewer.apkConversionGroup.isSelected(BytecodeViewer.viewer.apkConversionDex.getModel()))
+				 DiskWriter.writeNewLine(BytecodeViewer.settingsName, "0", false);
+			 else if(BytecodeViewer.viewer.apkConversionGroup.isSelected(BytecodeViewer.viewer.apkConversionEnjarify.getModel()))
+				 DiskWriter.writeNewLine(BytecodeViewer.settingsName, "1", false);
+			 DiskWriter.writeNewLine(BytecodeViewer.settingsName, BytecodeViewer.python3, false);
+			 DiskWriter.writeNewLine(BytecodeViewer.settingsName, BytecodeViewer.javac, false);
+			 DiskWriter.writeNewLine(BytecodeViewer.settingsName, BytecodeViewer.java, false);
 		} catch(Exception e) {
 			new the.bytecode.club.bytecodeviewer.api.ExceptionUI(e);
 		}
@@ -266,7 +320,9 @@ public class Settings {
 			else if(decompiler == 7)
 				BytecodeViewer.viewer.panelGroup1.setSelected(BytecodeViewer.viewer.panel1Krakatau.getModel(), true);
 			else if(decompiler == 8)
-				BytecodeViewer.viewer.panelGroup1.setSelected(BytecodeViewer.viewer.panel1KrakatauEditable.getModel(), true);
+				BytecodeViewer.viewer.panelGroup1.setSelected(BytecodeViewer.viewer.panel1KrakatauBytecode.getModel(), true);
+			else if(decompiler == 9)
+				BytecodeViewer.viewer.panelGroup1.setSelected(BytecodeViewer.viewer.panel1JDGUI.getModel(), true);
 
 			decompiler = Integer.parseInt(DiskReader.loadString(BytecodeViewer.settingsName, 82, false));
 			if(decompiler == 0)
@@ -286,7 +342,9 @@ public class Settings {
 			else if(decompiler == 7)
 				BytecodeViewer.viewer.panelGroup2.setSelected(BytecodeViewer.viewer.panel2Krakatau.getModel(), true);
 			else if(decompiler == 8)
-				BytecodeViewer.viewer.panelGroup2.setSelected(BytecodeViewer.viewer.panel2KrakatauEditable.getModel(), true);
+				BytecodeViewer.viewer.panelGroup2.setSelected(BytecodeViewer.viewer.panel2KrakatauBytecode.getModel(), true);
+			else if(decompiler == 9)
+				BytecodeViewer.viewer.panelGroup2.setSelected(BytecodeViewer.viewer.panel2JDGUI.getModel(), true);
 	
 			decompiler = Integer.parseInt(DiskReader.loadString(BytecodeViewer.settingsName, 83, false));
 			if(decompiler == 0)
@@ -306,7 +364,9 @@ public class Settings {
 			else if(decompiler == 7)
 				BytecodeViewer.viewer.panelGroup3.setSelected(BytecodeViewer.viewer.panel3Krakatau.getModel(), true);
 			else if(decompiler == 8)
-				BytecodeViewer.viewer.panelGroup3.setSelected(BytecodeViewer.viewer.panel3KrakatauEditable.getModel(), true);
+				BytecodeViewer.viewer.panelGroup3.setSelected(BytecodeViewer.viewer.panel3KrakatauBytecode.getModel(), true);
+			else if(decompiler == 9)
+				BytecodeViewer.viewer.panelGroup3.setSelected(BytecodeViewer.viewer.panel3JDGUI.getModel(), true);
 			
 			BytecodeViewer.viewer.refreshOnChange.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 84, false)));
 			
@@ -320,8 +380,40 @@ public class Settings {
 			BytecodeViewer.lastDirectory = DiskReader.loadString(BytecodeViewer.settingsName, 88, false);
 			BytecodeViewer.python = DiskReader.loadString(BytecodeViewer.settingsName, 89, false);
 			BytecodeViewer.rt = DiskReader.loadString(BytecodeViewer.settingsName, 90, false);
+			BytecodeViewer.viewer.panel1Proc_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 91, false)));
+			BytecodeViewer.viewer.panel1CFR_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 92, false)));
+			BytecodeViewer.viewer.panel1Fern_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 93, false)));
+			BytecodeViewer.viewer.panel1Krakatau_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 94, false)));
+			BytecodeViewer.viewer.panel1Smali_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 95, false)));
+			BytecodeViewer.viewer.panel2Proc_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 96, false)));
+			BytecodeViewer.viewer.panel2CFR_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 97, false)));
+			BytecodeViewer.viewer.panel2Fern_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 98, false)));
+			BytecodeViewer.viewer.panel2Krakatau_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 99, false)));
+			BytecodeViewer.viewer.panel2Smali_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 100, false)));
+			BytecodeViewer.viewer.panel3Proc_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 101, false)));
+			BytecodeViewer.viewer.panel3CFR_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 101, false)));
+			BytecodeViewer.viewer.panel3Fern_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 103, false)));
+			BytecodeViewer.viewer.panel3Krakatau_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 104, false)));
+			BytecodeViewer.viewer.panel3Smali_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 105, false)));
+			BytecodeViewer.viewer.decodeAPKResources.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 106, false)));
+			BytecodeViewer.library = DiskReader.loadString(BytecodeViewer.settingsName, 107, false);
+			BytecodeViewer.pingback = Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 108, false));
+			BytecodeViewer.viewer.panel1JDGUI_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 109, false)));
+			BytecodeViewer.viewer.panel2JDGUI_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 110, false)));
+			BytecodeViewer.viewer.panel3JDGUI_E.setSelected(Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 111, false)));
+			BytecodeViewer.viewer.fontSpinner.setValue(Integer.parseInt(DiskReader.loadString(BytecodeViewer.settingsName, 112, false)));
+			BytecodeViewer.deleteForiegnLibraries = Boolean.parseBoolean(DiskReader.loadString(BytecodeViewer.settingsName, 113, false));
+			decompiler = Integer.parseInt(DiskReader.loadString(BytecodeViewer.settingsName, 114, false));
+			if(decompiler == 0)
+				BytecodeViewer.viewer.apkConversionGroup.setSelected(BytecodeViewer.viewer.apkConversionDex.getModel(), true);
+			else if(decompiler == 1)
+				BytecodeViewer.viewer.apkConversionGroup.setSelected(BytecodeViewer.viewer.apkConversionEnjarify.getModel(), true);
+			BytecodeViewer.python3 = DiskReader.loadString(BytecodeViewer.settingsName, 115, false);
+			BytecodeViewer.javac = DiskReader.loadString(BytecodeViewer.settingsName, 116, false);
+			BytecodeViewer.java = DiskReader.loadString(BytecodeViewer.settingsName, 117, false);
 		} catch(Exception e) {
 			//ignore because errors are expected, first start up and outdated settings.
+			//e.printStackTrace();
 		}
 	}
 

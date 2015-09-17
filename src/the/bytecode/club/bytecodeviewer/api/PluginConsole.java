@@ -1,6 +1,5 @@
 package the.bytecode.club.bytecodeviewer.api;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -20,11 +19,30 @@ import java.awt.event.KeyListener;
 import javax.swing.JTextArea;
 
 import the.bytecode.club.bytecodeviewer.BytecodeViewer;
+import the.bytecode.club.bytecodeviewer.Resources;
 
 import javax.swing.JPanel;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
+
+/***************************************************************************
+ * Bytecode Viewer (BCV) - Java & Android Reverse Engineering Suite        *
+ * Copyright (C) 2014 Kalen 'Konloch' Kinloch - http://bytecodeviewer.com  *
+ *                                                                         *
+ * This program is free software: you can redistribute it and/or modify    *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation, either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+ ***************************************************************************/
 
 /**
  * A simple console GUI.
@@ -39,31 +57,36 @@ public class PluginConsole extends JFrame {
 	JPanel panel = new JPanel(new BorderLayout());
 	JScrollPane scrollPane = new JScrollPane();
 	public JCheckBox check = new JCheckBox("Exact");
-
+	final JTextField field = new JTextField();
+	
 	public PluginConsole(String pluginName) {
-		this.setIconImages(BytecodeViewer.iconList);
+		this.setIconImages(Resources.iconList);
 		setTitle("Bytecode Viewer - Plugin Console - " + pluginName);
 		setSize(new Dimension(542, 316));
 
 		getContentPane().add(scrollPane, BorderLayout.CENTER);
 
 		scrollPane.setViewportView(textArea);
+		textArea.addKeyListener(new KeyListener() {  
+			public void keyPressed(KeyEvent e) {  
+				if ((e.getKeyCode() == KeyEvent.VK_F) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+					field.requestFocus();
+				}
+	
+				BytecodeViewer.checkHotKey(e);
+			}
+			@Override public void keyReleased(KeyEvent arg0) { }
+			@Override public void keyTyped(KeyEvent arg0) { }  
+		});
 
 		JButton searchNext = new JButton();
 		JButton searchPrev = new JButton();
 		JPanel buttonPane = new JPanel(new BorderLayout());
 		buttonPane.add(searchNext, BorderLayout.WEST);
 		buttonPane.add(searchPrev, BorderLayout.EAST);
-		searchNext
-				.setIcon(new ImageIcon(
-						BytecodeViewer
-								.b642IMG("iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAMFBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAv3aB7AAAABnRSTlMANzlYqPBJSG/ZAAAASUlEQVR42mNgwAbS0oAEE4yHyWBmYAzjYDC694OJ4f9+BoY3H0BSbz6A2MxA6VciFyDqGAWQTWVkYEkCUrcOsDD8OwtkvMViMwAb8xEUHlHcFAAAAABJRU5ErkJggg==")));
-		searchPrev
-				.setIcon(new ImageIcon(
-						BytecodeViewer
-								.b642IMG("iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAMFBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAv3aB7AAAABnRSTlMANzlYgKhxpRi1AAAATElEQVR42mNgwAZYHIAEExA7qUAYLApMDmCGEwODCojByM/A8FEAyPi/moFh9QewYjCAM1iA+D2KqYwMrIlA6tUGFoa/Z4GMt1hsBgCe1wuKber+SwAAAABJRU5ErkJggg==")));
+		searchNext.setIcon(Resources.nextIcon);
+		searchPrev.setIcon(Resources.prevIcon);
 		panel.add(buttonPane, BorderLayout.WEST);
-		final JTextField field = new JTextField();
 		panel.add(field, BorderLayout.CENTER);
 		panel.add(check, BorderLayout.EAST);
 		searchNext.addActionListener(new ActionListener() {
@@ -93,7 +116,6 @@ public class PluginConsole extends JFrame {
 			public void keyTyped(KeyEvent arg0) {
 			}
 		});
-
 		scrollPane.setColumnHeaderView(panel);
 		this.setLocationRelativeTo(null);
 	}

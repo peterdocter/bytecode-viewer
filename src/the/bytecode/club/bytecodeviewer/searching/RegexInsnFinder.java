@@ -21,6 +21,24 @@ import org.objectweb.asm.tree.MultiANewArrayInsnNode;
 import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
+/***************************************************************************
+ * Bytecode Viewer (BCV) - Java & Android Reverse Engineering Suite        *
+ * Copyright (C) 2014 Kalen 'Konloch' Kinloch - http://bytecodeviewer.com  *
+ *                                                                         *
+ * This program is free software: you can redistribute it and/or modify    *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation, either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
 /**
  * An instruction finder that finds regex patterns in a method's instruction
  * list and returns an array with the found instructions.
@@ -138,7 +156,7 @@ public class RegexInsnFinder {
 		return buildRegexItems(items, true, true);
 	}
 
-	private static String processRegex(final String regex) {
+	public static String processRegex(final String regex) {
 		String result = regex.trim();
 		result = result.replaceAll("\\bANYINSN *", opcodesAnys);
 		result = result.replaceAll(opcodesInts
@@ -195,15 +213,14 @@ public class RegexInsnFinder {
 	public RegexInsnFinder(final ClassNode clazz, final MethodNode method) {
 		setMethod(clazz, method);
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	private AbstractInsnNode[] cleanInsn(final InsnList insnList) {
 		final List<AbstractInsnNode> il = new ArrayList<AbstractInsnNode>();
 
 		final Iterator<AbstractInsnNode> iIt = insnList.iterator();
 		while (iIt.hasNext()) {
 			final AbstractInsnNode node = iIt.next();
-			if (node.getOpcode() >= 0) {
+			if (node.opcode() >= 0) {
 				il.add(node);
 			}
 		}
@@ -218,7 +235,7 @@ public class RegexInsnFinder {
 		origInstructions = cleanInsn(mn.instructions);
 		final List<AbstractInsnNode> il = new ArrayList<AbstractInsnNode>();
 		for (final AbstractInsnNode ain : mn.instructions.toArray())
-			if (ain.getOpcode() >= 0) {
+			if (ain.opcode() >= 0) {
 				il.add(ain);
 			}
 		instructions = il.toArray(new AbstractInsnNode[il.size()]);
@@ -227,19 +244,19 @@ public class RegexInsnFinder {
 		for (int i = 0; i < instructions.length; i++) {
 			offsets[i] = -1;
 			final AbstractInsnNode ain = instructions[i];
-			if (ain.getOpcode() >= 0) {
-				if (ain.getOpcode() >= opcodes.length) {
+			if (ain.opcode() >= 0) {
+				if (ain.opcode() >= opcodes.length) {
 					try {
 						throw new UnexpectedException(
 								"Unknown opcode encountered: "
-										+ ain.getOpcode());
+										+ ain.opcode());
 					} catch (final UnexpectedException e) {
 						new the.bytecode.club.bytecodeviewer.api.ExceptionUI(e);
 					}
 				}
 				offsets[i] = insnString.length();
-				insnString += opcodes[ain.getOpcode()];
-				switch (ain.getType()) {
+				insnString += opcodes[ain.opcode()];
+				switch (ain.type()) {
 				case AbstractInsnNode.INT_INSN:
 					final IntInsnNode iin = (IntInsnNode) ain;
 					insnString += "{" + iin.operand + "}";
@@ -322,7 +339,7 @@ public class RegexInsnFinder {
 			if (regexMatcher.find())
 				return makeResult(regexMatcher.start(), regexMatcher.end());
 		} catch (final PatternSyntaxException ex) {
-			new the.bytecode.club.bytecodeviewer.api.ExceptionUI(ex);
+			//ignore, they fucked up regex
 		}
 		return new AbstractInsnNode[0];
 	}

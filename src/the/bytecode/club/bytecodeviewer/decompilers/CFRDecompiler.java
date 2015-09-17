@@ -16,34 +16,44 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import me.konloch.kontainer.io.DiskReader;
-import me.konloch.kontainer.io.DiskWriter;
 
-import org.objectweb.asm.ClassWriter;
+import org.apache.commons.lang3.ArrayUtils;
 import org.objectweb.asm.tree.ClassNode;
 
 import the.bytecode.club.bytecodeviewer.BytecodeViewer;
 import the.bytecode.club.bytecodeviewer.JarUtils;
 import the.bytecode.club.bytecodeviewer.MiscUtils;
+import the.bytecode.club.bytecodeviewer.Resources;
+
+/***************************************************************************
+ * Bytecode Viewer (BCV) - Java & Android Reverse Engineering Suite        *
+ * Copyright (C) 2014 Kalen 'Konloch' Kinloch - http://bytecodeviewer.com  *
+ *                                                                         *
+ * This program is free software: you can redistribute it and/or modify    *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation, either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+ ***************************************************************************/
 
 /**
+ * CFR Java Wrapper
  * 
  * @author Konloch
  * 
  */
 
-public class CFRDecompiler extends JavaDecompiler {
-
-	@Override
-	public void decompileToClass(String className, String classNameSaved) {
-		String contents = decompileClassNode(BytecodeViewer.getClassNode(className));
-		DiskWriter.replaceFile(classNameSaved, contents, false);
-	}
+public class CFRDecompiler extends Decompiler {
 	
 	@Override
-	public String decompileClassNode(ClassNode cn) {
-		final ClassWriter cw = new ClassWriter(0);
-		cn.accept(cw);
-
+	public String decompileClassNode(ClassNode cn, byte[] b) {
 		String fileStart = BytecodeViewer.tempDirectory + BytecodeViewer.fs;
 		
 		final File tempClass = new File(MiscUtils.getUniqueName(fileStart, ".class") + ".class");
@@ -51,7 +61,7 @@ public class CFRDecompiler extends JavaDecompiler {
 		try {
 			final FileOutputStream fos = new FileOutputStream(tempClass);
 
-			fos.write(cw.toByteArray());
+			fos.write(b);
 
 			fos.close();
 		} catch (final IOException e) {
@@ -59,8 +69,24 @@ public class CFRDecompiler extends JavaDecompiler {
 		}
 
 		String fuckery = fuckery(fileStart);
-		org.benf.cfr.reader.Main.main(generateMainMethod(
-				tempClass.getAbsolutePath(), fuckery));
+		if(!BytecodeViewer.fatJar) {
+			try {
+				ProcessBuilder pb = new ProcessBuilder(ArrayUtils.addAll(
+							new String[]{BytecodeViewer.getJavaCommand(),"-jar",Resources.findLibrary("cfr")},
+							generateMainMethod(tempClass.getAbsolutePath(), fuckery)
+				));
+				BytecodeViewer.sm.stopBlocking();
+				Process p = pb.start();
+				BytecodeViewer.createdProcesses.add(p);
+				p.waitFor();
+			} catch(Exception e) {
+				new the.bytecode.club.bytecodeviewer.api.ExceptionUI(e);
+			} finally {
+				BytecodeViewer.sm.setBlocking();
+			}
+		} else {
+			org.benf.cfr.reader.Main.main(generateMainMethod(tempClass.getAbsolutePath(), fuckery));
+		}
 
 		tempClass.delete();
 

@@ -16,47 +16,85 @@ import the.bytecode.club.bytecodeviewer.JarUtils;
 import the.bytecode.club.bytecodeviewer.MiscUtils;
 import the.bytecode.club.bytecodeviewer.ZipUtils;
 
+/***************************************************************************
+ * Bytecode Viewer (BCV) - Java & Android Reverse Engineering Suite        *
+ * Copyright (C) 2014 Kalen 'Konloch' Kinloch - http://bytecodeviewer.com  *
+ *                                                                         *
+ * This program is free software: you can redistribute it and/or modify    *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation, either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
 /**
- * Krakatau Java Decompiler, requires Python 2.7
+ * Krakatau Java Decompiler Wrapper, requires Python 2.7
  * 
  * @author Konloch
  *
  */
 
-public class KrakatauDecompiler extends JavaDecompiler {
+public class KrakatauDecompiler extends Decompiler {
 
-	public String decompileClassNode(ClassNode cn) {
+	public String quick() {
+		if(BytecodeViewer.library.isEmpty())
+			return "";
+		else
+			return ";"+BytecodeViewer.library;
+	}
+	
+	public String decompileClassNode(ClassNode cn, byte[] b) {
+		
 		if(BytecodeViewer.python.equals("")) {
-			BytecodeViewer.showMessage("You need to set your Python 2.7 executable path.");
+			BytecodeViewer.showMessage("You need to set your Python (or PyPy for speed) 2.7 executable path.");
 			BytecodeViewer.viewer.pythonC();
 		}
 		if(BytecodeViewer.rt.equals("")) {
 			BytecodeViewer.showMessage("You need to set your JRE RT Library.\r\n(C:\\Program Files (x86)\\Java\\jre7\\lib\\rt.jar)");
 			BytecodeViewer.viewer.rtC();
 		}
+
+		if(BytecodeViewer.python.equals("")) {
+			BytecodeViewer.showMessage("You need to set Python!");
+			return "Set your paths";
+		}
+
+		if(BytecodeViewer.rt.equals("")) {
+			BytecodeViewer.showMessage("You need to set RT.jar!");
+			return "Set your paths";
+		}
+		
 		String s = "Bytecode Viewer Version: " + BytecodeViewer.version + BytecodeViewer.nl + BytecodeViewer.nl + "Please send this to konloch@gmail.com. " + BytecodeViewer.nl + BytecodeViewer.nl;
 		
 		final File tempDirectory = new File(BytecodeViewer.tempDirectory + BytecodeViewer.fs + MiscUtils.randomString(32) + BytecodeViewer.fs);
 		tempDirectory.mkdir();
 		final File tempJar = new File(BytecodeViewer.tempDirectory + BytecodeViewer.fs + "temp"+MiscUtils.randomString(32)+".jar");
-		while(tempJar.exists())
-			tempJar.delete();
-		JarUtils.saveAsJar(BytecodeViewer.getLoadedClasses(), tempJar.getAbsolutePath());
+		JarUtils.saveAsJarClassesOnly(BytecodeViewer.getLoadedClasses(), tempJar.getAbsolutePath());
 		
-		BytecodeViewer.sm.blocking = false;
+		BytecodeViewer.sm.stopBlocking();
 		try {
 			ProcessBuilder pb = new ProcessBuilder(
 					BytecodeViewer.python,
+					"-O", //love you storyyeller <3
 					BytecodeViewer.krakatauWorkingDirectory + BytecodeViewer.fs + "decompile.py",
+					"-skip", //love you storyyeller <3
 					"-nauto",
 					"-path",
-					BytecodeViewer.rt+";"+tempJar.getAbsolutePath(),
+					BytecodeViewer.rt+";"+tempJar.getAbsolutePath()+quick(),
 					"-out",
 					tempDirectory.getAbsolutePath(),
 					cn.name+".class"
 			);
 
 	        Process process = pb.start();
+	        BytecodeViewer.createdProcesses.add(process);
 	        
 	        //Read out dir output
 	        InputStream is = process.getInputStream();
@@ -67,6 +105,7 @@ public class KrakatauDecompiler extends JavaDecompiler {
 	        while ((line = br.readLine()) != null) {
 	            log += BytecodeViewer.nl + line;
 	        }
+	        br.close();
 
 	        log += BytecodeViewer.nl+BytecodeViewer.nl+"Error:"+BytecodeViewer.nl+BytecodeViewer.nl;
 	        is = process.getErrorStream();
@@ -75,6 +114,7 @@ public class KrakatauDecompiler extends JavaDecompiler {
 	        while ((line = br.readLine()) != null) {
 	            log += BytecodeViewer.nl + line;
 	        }
+	        br.close();
 	        
 	        int exitValue = process.waitFor();
 	        log += BytecodeViewer.nl+BytecodeViewer.nl+"Exit Value is " + exitValue;
@@ -89,16 +129,16 @@ public class KrakatauDecompiler extends JavaDecompiler {
 			e.printStackTrace(new PrintWriter(sw));
 			e.printStackTrace();
 			s += BytecodeViewer.nl+"Bytecode Viewer Version: " + BytecodeViewer.version + BytecodeViewer.nl + BytecodeViewer.nl + sw.toString();
+		} finally {
+			BytecodeViewer.sm.setBlocking();
 		}
-		
-		BytecodeViewer.sm.blocking = true;
 		
 		return s;
 	}
 
 	public void decompileToZip(String zipName) {
 		if(BytecodeViewer.python.equals("")) {
-			BytecodeViewer.showMessage("You need to set your Python 2.7 executable path.");
+			BytecodeViewer.showMessage("You need to set your Python (or PyPy for speed) 2.7 executable path.");
 			BytecodeViewer.viewer.pythonC();
 		}
 		if(BytecodeViewer.rt.equals("")) {
@@ -110,13 +150,15 @@ public class KrakatauDecompiler extends JavaDecompiler {
 		final File tempDirectory = new File(BytecodeViewer.tempDirectory + BytecodeViewer.fs + ran + BytecodeViewer.fs);
 		tempDirectory.mkdir();
 		final File tempJar = new File(BytecodeViewer.tempDirectory + BytecodeViewer.fs + "temp.jar");
-		JarUtils.saveAsJar(BytecodeViewer.getLoadedClasses(), tempJar.getAbsolutePath());
+		JarUtils.saveAsJarClassesOnly(BytecodeViewer.getLoadedClasses(), tempJar.getAbsolutePath());
 		
-		BytecodeViewer.sm.blocking = false;
+		BytecodeViewer.sm.stopBlocking();
 		try {
 			ProcessBuilder pb = new ProcessBuilder(
 					BytecodeViewer.python,
+					"-O", //love you storyyeller <3
 					BytecodeViewer.krakatauWorkingDirectory + BytecodeViewer.fs + "decompile.py",
+					"-skip", //love you storyyeller <3
 					"-nauto",
 					"-path",
 					BytecodeViewer.rt+";"+tempJar.getAbsolutePath(),
@@ -126,25 +168,9 @@ public class KrakatauDecompiler extends JavaDecompiler {
 			);
 
 	        Process process = pb.start();
-	        
-	        //Read out dir output
-	        InputStream is = process.getInputStream();
-	        InputStreamReader isr = new InputStreamReader(is);
-	        BufferedReader br = new BufferedReader(isr);
-	        String line;
-	        while ((line = br.readLine()) != null) {
-	            System.out.println(line);
-	        }
-
-	        is = process.getErrorStream();
-	        isr = new InputStreamReader(is);
-	        br = new BufferedReader(isr);
-	        while ((line = br.readLine()) != null) {
-	            System.out.println(line);
-	        }
-	        
-	        int exitValue = process.waitFor();
-	        System.out.println("Exit Value is " + exitValue);
+	        BytecodeViewer.createdProcesses.add(process);
+	        process.waitFor();
+	        MiscUtils.printProcess(process);
 			
 	       // ZipUtils.zipDirectory(tempDirectory, new File(zipName));
 	        ZipUtils.zipFolder(tempDirectory.getAbsolutePath(), zipName, ran);
@@ -153,66 +179,8 @@ public class KrakatauDecompiler extends JavaDecompiler {
 			tempJar.delete();
 		} catch(Exception e) {
 			new the.bytecode.club.bytecodeviewer.api.ExceptionUI(e);
-		}
-		
-		BytecodeViewer.sm.blocking = true;
-	}
-
-	public void decompileToClass(String className, String classNameSaved) {
-		if(BytecodeViewer.python.equals("")) {
-			BytecodeViewer.showMessage("You need to set your Python 2.7 executable path.");
-			BytecodeViewer.viewer.pythonC();
-		}
-		if(BytecodeViewer.rt.equals("")) {
-			BytecodeViewer.showMessage("You need to set your JRE RT Library.\r\n(C:\\Program Files (x86)\\Java\\jre7\\lib\\rt.jar)");
-			BytecodeViewer.viewer.rtC();
-		}
-		
-		final File tempDirectory = new File(BytecodeViewer.tempDirectory + BytecodeViewer.fs + MiscUtils.randomString(32) + BytecodeViewer.fs);
-		tempDirectory.mkdir();
-		final File tempJar = new File(BytecodeViewer.tempDirectory + BytecodeViewer.fs + "temp.jar");
-		JarUtils.saveAsJar(BytecodeViewer.getLoadedClasses(), tempJar.getAbsolutePath());
-		
-		BytecodeViewer.sm.blocking = false;
-		try {
-			ProcessBuilder pb = new ProcessBuilder(
-					BytecodeViewer.python,
-					BytecodeViewer.krakatauWorkingDirectory + BytecodeViewer.fs + "decompile.py",
-					"-nauto",
-					"-path",
-					BytecodeViewer.rt+";"+tempJar.getAbsolutePath(),
-					"-out",
-					tempDirectory.getAbsolutePath(),
-					className+".class"
-			);
-
-	        Process process = pb.start();
-	        
-	        //Read out dir output
-	        InputStream is = process.getInputStream();
-	        InputStreamReader isr = new InputStreamReader(is);
-	        BufferedReader br = new BufferedReader(isr);
-	        String line;
-	        while ((line = br.readLine()) != null) {
-	            System.out.println(line);
-	        }
-
-	        is = process.getErrorStream();
-	        isr = new InputStreamReader(is);
-	        br = new BufferedReader(isr);
-	        while ((line = br.readLine()) != null) {
-	            System.out.println(line);
-	        }
-	        
-	        int exitValue = process.waitFor();
-	        System.out.println("Exit Value is " + exitValue);
-			
-			File f = new File(tempDirectory.getAbsolutePath() + BytecodeViewer.fs + className + ".java");
-			f.renameTo(new File(classNameSaved));
-			tempDirectory.delete();
-			tempJar.delete();
-		} catch(Exception e) {
-			new the.bytecode.club.bytecodeviewer.api.ExceptionUI(e);
+		} finally {
+			BytecodeViewer.sm.setBlocking();
 		}
 	}
 

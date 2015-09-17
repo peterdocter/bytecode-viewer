@@ -27,6 +27,24 @@ import eu.bibl.banalysis.filter.insn.MultiANewArrayInstructionFilter;
 import eu.bibl.banalysis.filter.insn.TypeInstructionFilter;
 import eu.bibl.banalysis.filter.insn.VarInstructionFilter;
 
+/***************************************************************************
+ * Bytecode Viewer (BCV) - Java & Android Reverse Engineering Suite        *
+ * Copyright (C) 2014 Kalen 'Konloch' Kinloch - http://bytecodeviewer.com  *
+ *                                                                         *
+ * This program is free software: you can redistribute it and/or modify    *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation, either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
 /**
  * Pattern filter holder and stepper.
  * 
@@ -155,26 +173,26 @@ public class InstructionPattern implements Opcodes {
 		if (ain instanceof LdcInsnNode) {
 			return new LdcInstructionFilter(((LdcInsnNode) ain).cst);
 		} else if (ain instanceof TypeInsnNode) {
-			return new TypeInstructionFilter(ain.getOpcode(),
+			return new TypeInstructionFilter(ain.opcode(),
 					((TypeInsnNode) ain).desc);
 		} else if (ain instanceof FieldInsnNode) {
-			return new FieldInstructionFilter(ain.getOpcode(),
+			return new FieldInstructionFilter(ain.opcode(),
 					((FieldInsnNode) ain).owner, ((FieldInsnNode) ain).name,
 					((FieldInsnNode) ain).desc);
 		} else if (ain instanceof MethodInsnNode) {
-			return new MethodInstructionFilter(ain.getOpcode(),
+			return new MethodInstructionFilter(ain.opcode(),
 					((MethodInsnNode) ain).owner, ((MethodInsnNode) ain).name,
 					((MethodInsnNode) ain).desc);
 		} else if (ain instanceof VarInsnNode) {
-			return new VarInstructionFilter(ain.getOpcode(),
+			return new VarInstructionFilter(ain.opcode(),
 					((VarInsnNode) ain).var);
 		} else if (ain instanceof InsnNode) {
-			return new InsnInstructionFilter(ain.getOpcode());
+			return new InsnInstructionFilter(ain.opcode());
 		} else if (ain instanceof IincInsnNode) {
 			return new IincInstructionFilter(((IincInsnNode) ain).incr,
 					((IincInsnNode) ain).var);
 		} else if (ain instanceof JumpInsnNode) {
-			return new JumpInstructionFilter(ain.getOpcode());
+			return new JumpInstructionFilter(ain.opcode());
 		} else if (ain instanceof LabelNode) {
 			return InstructionFilter.ACCEPT_ALL; // TODO: Cache labels and
 													// check. // TODO: That's a
